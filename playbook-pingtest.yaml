@@ -1,0 +1,21 @@
+#-
+# name: Test connectivity
+# hosts: all
+# tasks: 
+#  - name: ping test
+#    ping:
+-
+  name: Install nginx
+  hosts: target1
+  tasks:
+    command: amazon-linux-extras install nginx1
+#   - yum:
+ #     name: nginx1
+ #     state: present
+-
+  name: start web server
+  hosts: target1
+  tasks:
+   - service:
+       name: nginx
+       state: started

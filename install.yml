@@ -1,0 +1,21 @@
+---
+-  
+  name: Install httpd and db
+  hosts: target1
+  tasks:
+   - 
+     name: Install httpd
+     yum: 
+       name: httpd 
+       state: present
+     service:
+       name: httpd
+       state: started
+   - 
+     name: install postgresql
+     yum:
+       name: install postgresql
+       state: present
+     service:
+       name: postgresql
+       state: started

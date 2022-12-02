@@ -1,0 +1,22 @@
+---
+- name: Install nodejs
+  hosts: [ec2]
+  become: true 
+  vars:
+    packages:
+      - python3
+      - tree
+      - git 
+  tasks:
+    - yum: "name={{packages}} state=present"
+    - command: "pip3 install virtualenv"
+    - command: "amazon-linux-extras enable postgresql11"
+    - yum: "name=postgresql state=installed" 
+    - name: Install nginx
+      command: "amazon-linux-extras enable nginx1"
+      command: "amazon-linux-extras install -y nginx1"
+      command: "systemctl start nginx"
+      name: nginx installed successfully
+    - name: Installing nodejs
+      script: install_node.sh
+      name: nodejs installed successfully

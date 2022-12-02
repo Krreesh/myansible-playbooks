@@ -1,0 +1,13 @@
+---
+- name: Price list of fruits
+  hosts: localhost
+  vars:
+    fruits:
+      - Apple
+      - Banana
+      - Grapes
+      - Guava
+  tasks:
+    - name: list the fruits
+      command: echo "{{ item }}"
+      with_items: "{{ fruits }}"
