@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+#- hosts: ubuntu
+  gather_facts: false
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Install our packages
+      apt:
+        name: ['apache2', 'mysql-server', 'mysql-common', 'mysql-client']
+        state: present                
+        update_cache: true
