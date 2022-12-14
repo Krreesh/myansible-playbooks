@@ -1,0 +1,26 @@
+---
+- name: Install java and ssh
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name: Apt-get update
+      apt:
+        update-cache: yes
+        name: default-jre
+        state: present
+    - name: SSH
+      apt:
+        update-cache: yes
+        name: openssh-server
+        state: present
+    - name: Jenkins user
+      user:
+        name: jenkins
+        create_home: true
+        password: "{{ password | password_hash('sha512') }}"
+        #On command line pass parameter as "--extra-vars "password=Password123"
+        shell: /bin/bash
+        home: /var/lib/jenkins
+        generate_ssh_key: yes
+        ssh_key_comment: jenkins agent key
+        ssh_key_file: .ssh/jenkinsagent_rsa
