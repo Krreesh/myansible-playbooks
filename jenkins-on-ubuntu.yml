@@ -1,0 +1,22 @@
+---
+- name: Install Jenkins on ubuntu
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name:  ensure the jenkins apt repository key is installed
+      apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+    - name: ensure the repository is configured
+      apt_repository:
+        repo: deb http://pkg.jenkins.io/debian-stable binary/
+        state: present
+    - name: ensure jenkins is installed
+      apt:
+        name: jenkins
+        update_cache: yes
+        state: present
+    - name: ensure jenkins running
+      service:
+        name: jenkins
+        state: started
