@@ -1,0 +1,55 @@
+---
+- name: playbook for simple 1 GB partition
+  hosts: redhat
+  remote_user: ansible
+  become: true
+  tasks:
+  - name: install lvm packages
+    yum:
+      name: lvm2
+      state: present
+  - name: create partition
+    parted:
+      device: /dev/xvdb
+      number: 1
+      state: present
+      part_end: 2GiB
+  - name: task for creating volume group
+    lvg:
+      vg: simple-vg
+      pvs: /dev/xvdb1
+      pesize: 16
+  - name: task for creating logical volume
+    lvol:
+      vg: simple-vg
+      lv: sample-lv
+      size: 1g
+      force: true
+  - name: Create directory data1 if does not exist
+    file:
+      path: /data1
+      state: directory 
+      mode: '0755'
+  - name: format the ext4 filesystem
+    filesystem:
+      fstype: ext4
+      dev: /dev/simple-vg/sample-lv
+  - name: mount sample-lv to /data1
+    mount:
+      path: /data1
+      src: /dev/simple-vg/sample-lv
+      state: mounted
+      fstype: ext4
+  - name: Extend the logical volume to take all remaining space of the PVs and resize the underlying filesystem
+    lvol:
+      vg: simple-vg
+      lv: sample-lv
+      size: 100%PVS
+      resizefs: true
+  - name: Shrink the logical volue to 700m
+    lvol:
+      vg: simple-vg
+      lv: sample-lv
+      size: 700m
+      shrink: true
+      force: true
