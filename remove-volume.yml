@@ -1,0 +1,32 @@
+---
+- name: playbook for simple 1 GB partition
+  hosts: redhat
+  remote_user: ansible
+  become: true
+  tasks:
+  - name: unmount /data1
+    mount:
+      path: /data1
+      state: unmounted
+  - name: remove logical volumes sample-lv
+    lvol:
+      vg: simple-vg
+      lv: sample-lv
+      state: absent
+      force: true
+  - name: remove logical volumes sample-lv2
+    lvol:
+      vg: simple-vg
+      lv: sample-lv2
+      state: absent
+      force: true      
+  - name: remove volume group 
+    lvg:
+      vg: simple-vg
+      state: absent
+  - name: remove partition
+    parted:
+      device: /dev/xvdb
+      number: 1
+      state: absent
+      
