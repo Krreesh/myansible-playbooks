@@ -1,5 +1,5 @@
 -
-   name: install java and tomcat server
+   name: check file and directory contents
    hosts: ansible
    become: yes
    gather_facts: falses
