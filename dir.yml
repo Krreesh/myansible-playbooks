@@ -1,0 +1,33 @@
+---
+- name: create a directory
+  hosts: redhat
+  become: yes
+  gather_facts: no
+  vars:
+    mydir: asmita
+    adir: tanisha
+  tasks:
+  - file: 
+      path: "~/{{ mydir }}"
+      state: directory
+      mode: '0755'
+
+  - file:
+      path: /tmp/hello.txt
+      state: touch
+      mode: u+rx,g-wx,o-rwx
+      modification_time: preserve
+      access_time: preserve
+  - file:
+      path: /home/shreya/pune/chinchwad
+      state: directory
+      recurse: yes
+      owner: shreya
+      group: shreya
+  - yum:
+      pkg: vdo
+      state: absent
+  # - service:
+  #     name: vdo
+  #     state: started
+      
