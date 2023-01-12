@@ -1,0 +1,21 @@
+-
+   name: install java and tomcat server
+   hosts: ansible
+   become: yes
+   gather_facts: falses
+   tasks:
+   - shell: find /tmp -name *.txt
+     register: find_output
+   - name: checking contents of find_output
+     debug:
+       msg: "{{ find_output }}"
+   - name: printing files
+     debug:
+       msg: "{{ item }}"
+     loop: "{{ find_output.stdout_lines }}"
+   - shell: cat /tmp/2.txt
+     register: file_out
+   - name: contents of 2.txt
+     debug:
+       msg: "{{ file_out.stdout }}"
+       
