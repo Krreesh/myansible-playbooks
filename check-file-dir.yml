@@ -1,5 +1,5 @@
 -
-   name: check file and directory contents
+   name: install java and tomcat server
    hosts: ansible
    become: yes
    gather_facts: falses
@@ -18,4 +18,10 @@
    - name: contents of 2.txt
      debug:
        msg: "{{ file_out.stdout }}"
-       
+   - name: printing directory contents
+     shell: ls  /opt/rh
+     register: dir_contents
+   - name: check if directory is empty or not
+     debug:
+       msg: "Directory is  empty"
+     when: dir_contents.stdout == ""
