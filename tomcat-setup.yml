@@ -1,0 +1,25 @@
+-
+   name: install java and tomcat server
+   hosts: ansible
+   become: yes
+   gather_facts: falses
+   tasks:
+   - yum:
+       name: java-11-amazon-corretto-headless 
+       state: latest
+   - user:
+       name: tomcat
+       home: /opt/tomcat8
+       create_home: true
+       group: root
+       shell: /bin/false
+   - file:
+       path: /opt/tomcat8
+       mode: 0755
+       owner: tomcat
+   - get_url:
+       url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
+       dest: /opt
+       checksum: sha512:33c51be9410eaa0ce1393f8ce80a42a9639b68c7b7af1e9e642045614c170a12f8841ce4142933d1f4d18ba7efc85c630f91c312e959dcdc64aae396c46bdd97
+  # - unarchive:
+  #     src: /opt/apache-tomcat-10.0.27.tar.gz
