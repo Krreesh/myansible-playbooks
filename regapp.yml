@@ -1,0 +1,16 @@
+# first create Dockerfile with below contents
+#FROM tomcat:latest
+#RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps/
+#COPY ./*.war /usr/local/tomcat/webapps/
+---
+- name: tag the image and push to docker hub 
+  hosts: localhost
+  tasks:
+    - name: build image
+      command: docker build -t regapp:latest .
+        #args:
+        #chdir: cd /opt/docker
+    - name: tag the image
+      command: docker tag regapp:latest krreesh/myregiapp:v1
+    - name: push image to docker hub
+      command: docker push krreesh/myregiapp:v1
