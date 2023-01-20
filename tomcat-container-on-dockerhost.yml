@@ -1,0 +1,30 @@
+# First create Dockerfile on docker host with be contents
+# FROM tomcat:latest
+# RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+# COPY ./*.war /usr/local/tomcat/webapps
+#
+---
+- name: create container
+  hosts: docker
+  tasks:
+    #- shell: |
+    #  docker build -t regapp:v2 .
+    #  docker run -d --name register-server -p 8080:8080 regapp:v2
+
+  - name: Build an image 
+    community.docker.docker_image:
+      name: registry
+      tag: v1
+      build:
+        path: /opt/docker
+      source: build
+  - name: Create a container
+    docker_container:
+      name: reg-server
+      image: registry:v1
+      detach: true
+      exposed_ports: 8080
+      ports: 
+      - "8080:8080"
+      state: present
+      recreate: true
