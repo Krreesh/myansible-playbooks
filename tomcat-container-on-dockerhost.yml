@@ -26,5 +26,11 @@
       exposed_ports: 8080
       ports: 
       - "8080:8080"
-      state: present
+      state: started
       recreate: true
+  - name: tag docker and push to docker hub
+    docker_image:
+      name: registry:v1
+      repository: krreesh/myregistry:v1
+      push: true
+      source: local
