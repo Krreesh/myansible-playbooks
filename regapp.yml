@@ -9,7 +9,7 @@
     - name: build image
       command: docker build -t regapp:latest .
         #args:
-        #chdir: cd /opt/docker
+        #chdir: /opt/docker
     - name: tag the image
       command: docker tag regapp:latest krreesh/myregiapp:v1
     - name: push image to docker hub
