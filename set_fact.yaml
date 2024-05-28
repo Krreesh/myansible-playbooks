@@ -1,0 +1,29 @@
+---
+- hosts: cent
+  become: yes
+  tasks:
+  - name: set-fact module
+    set_fact:
+      file_name: sample.txt
+  - name: create file
+    file:
+      path: "/home/ec2-user/{{ file_name }}"
+      state: touch
+  - name: print
+    copy:
+      dest: "/home/ec2-user/{{ file_name }}"
+      content: "{{ ansible_facts.default_ipv4.address }}"
+      content: "{{ ansible_facts.default_ipv4.address }}"
+  - name: filenames
+    set_fact:
+      file1: a.txt
+      file2: b.txt
+      file3: c.txt
+  - name: create files
+    file:
+      state: touch
+      path: /tmp/{{ item }}
+    with_items:
+    - "{{ file1 }}"
+    - "{{ file2 }}"
+    - "{{ file3 }}"
