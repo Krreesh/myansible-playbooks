@@ -1,0 +1,13 @@
+---
+- hosts: all
+  gather_facts: yes
+  ignore_errors: true
+  tasks:
+  - name: print
+    debug:
+      #var=ansible_default_ipv4.address
+      var=hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+    register: res
+  - name: print res
+    debug:
+      msg: "{{ ansible_ssh_host }}"
