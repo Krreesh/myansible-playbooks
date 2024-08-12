@@ -7,7 +7,7 @@
   tasks:
   - name: ensure pkg updated
     yum:
-      name: "nano"
+      name: "*"
       update_cache: yes
       state: latest
     register: ifpatched
