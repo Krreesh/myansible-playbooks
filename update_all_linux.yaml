@@ -16,8 +16,8 @@
         name: '*'
         state: latest
 
-    - name: Update Alpine-based Systems
-      when: ansible_os_family == 'Alpine'
-      apk:
-        update_cache: yes
-        upgrade: yes
+    # - name: Update Alpine-based Systems
+    #   when: ansible_os_family == 'Alpine'
+    #   apk:
+    #     update_cache: yes
+    #     upgrade: yes
