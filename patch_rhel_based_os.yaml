@@ -1,0 +1,73 @@
+---
+- name: patch
+  hosts: all
+  become: yes
+  vars:
+  - ssh_port: 22
+  tasks:
+  - name: ensure pkg updated
+    yum:
+      name: "nano"
+      update_cache: yes
+      state: latest
+    register: ifpatched
+  - name: check if reboot required
+    command: need-restarting -r
+    register: reboot_result
+    ignore_errors: yes
+  - name: print reboot_result
+    debug:
+      msg: "Is reboot required: {{ reboot_result }}"
+ # - name: rebooting server
+  #  reboot:
+   #  reboot_timeout: 90
+  - name: reboot server
+    reboot:
+      reboot_timeout: 90
+    when: ( reboot_result.rc == 0 )
+    register: reboot_status
+    async: 1
+    poll: 0
+  - name: Wait for 2 minutes for server to come up after rebooting
+    pause: 
+      minutes: 2
+    when: ( reboot_result.rc == 0 )
+  - name: wait for connection
+    wait_for:
+      port: "{{ ssh_port }}"
+      host: "{{ inventory_hostname }}"
+      timeout: 120
+      state: started
+    when: ( reboot_result.rc == 0 )
+  - name: print
+    debug:
+      var: ifpatched
+  - name: check
+    debug:
+      msg: "Whether changed {{ ifpatched.changed }}"
+  - name: initialize servers list 
+    set_fact:
+      patched_servers: []
+      unpatched_servers: []
+  - name: add servers
+    set_fact:
+      patched_servers: "{{ patched_servers + [ inventory_hostname ] }}"
+    when: ( ifpatched.changed == True )
+  - name: add unpatched
+    set_fact: 
+      unpatched_servers: "{{ unpatched_servers + [ inventory_hostname ] }}"
+    when: ( ifpatched.changed == False )
+  - name: save patched servers to file
+    lineinfile:
+      create: yes
+      insertafter: EOF
+      line: "{{ patched_servers }}"
+      dest: /root/patched_servers.txt
+    delegate_to: localhost
+  - name: save unpatched servers to file
+    lineinfile:
+      create: yes
+      insertafter: EOF
+      line: "{{ unpatched_servers }}"
+      dest: /root/unpatched_servers.txt
+    delegate_to: localhost
