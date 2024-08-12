@@ -1,6 +1,6 @@
 ---
 - name: Test WinRM connection
-  hosts: ec2-54-173-130-171.compute-1.amazonaws.com
+  hosts: all
   gather_facts: no
   tasks:
     - name: Test connection
