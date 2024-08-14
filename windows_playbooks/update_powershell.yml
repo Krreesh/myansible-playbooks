@@ -1,0 +1,9 @@
+---
+- name: Update Powershell version
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Run basic PowerShell script
+    ansible.windows.win_powershell:
+      script: |
+        winget upgrade --id Microsoft.PowerShell
