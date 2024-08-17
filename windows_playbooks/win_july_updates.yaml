@@ -1,0 +1,22 @@
+---
+- name: Install Windows updates
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Install specific updates based on the KBs for those updates
+    win_updates:
+      category_names:
+      - SecurityUpdates
+      whitelist:
+      - KB5039885
+      - KB5040434
+      - KB5040562
+      blacklist:
+      - KB5041773
+      - KB5041951
+      - KB5041576
+    register: update_result
+  - name: reboot host if required
+    win_reboot:
+      reboot_timeout: 600
+    when: update_result.reboot_required
