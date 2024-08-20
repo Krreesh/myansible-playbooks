@@ -1,0 +1,19 @@
+---
+- name: copy and install windows updates
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: copy updates
+    copy:
+      src: "{{ item }}"
+      dest: C:\
+    loop:
+    - windows10.0-kb5040562-x64_cef5da8db3d043f85378126b220a5286bcfbf25b.msu
+    - windows10.0-kb5040434-x64_d54a2d3165f2f751ceee94f5a92b8ae70a82b77e.msu
+    - windows10.0-kb5039885-x86-ndp48_af6a60398ee2a3dc8f6ca1788952b6e5dd01fb42.msu
+  - name: Install kb5040434 updates based on the KBs for those updates
+    win_shell: C:\windows10.0-kb5040434-x64_d54a2d3165f2f751ceee94f5a92b8ae70a82b77e.msu
+  - name: Install kb5040562 updates based on the KBs for those updates
+    win_shell: C:\windows10.0-kb5040562-x64_cef5da8db3d043f85378126b220a5286bcfbf25b.msu
+  - name: Install kb5039885 updates based on the KBs for those updates
+    win_shell: C:\windows10.0-kb5039885-x86-ndp48_af6a60398ee2a3dc8f6ca1788952b6e5dd01fb42.msu
