@@ -1,0 +1,12 @@
+---
+- name: Installation of insights-client on rhel
+  hosts: all
+  roles:
+  - { role: RedHatInsights.insights-client, when: ansible_os_family == 'RedHat' }
+  tasks:
+    - name: start insights-client service
+      become: yes
+      service:
+        name: insights-client
+        state: started
+        enabled: yes

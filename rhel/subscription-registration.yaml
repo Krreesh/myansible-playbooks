@@ -1,0 +1,35 @@
+---
+- name: Register Red Hat server and attach subscriptions
+  hosts: all
+  become: true
+  tasks:
+    - name: Install subscription-manager
+      package:
+        name: subscription-manager
+        state: present
+
+    - name: Register the system with Subscription Manager
+      command: >
+        subscription-manager register
+        --username={{ redhat_username }}
+        --password={{ redhat_password }}
+      register: register_output
+      changed_when: "'Successfully registered' in register_output.stdout"
+
+    - name: Attach subscription to the system
+      command: >
+        subscription-manager attach --auto
+      register: attach_output
+      changed_when: "'Attached' in attach_output.stdout"
+
+    - name: Display registration and attachment results
+      debug:
+        msg:
+          - "Registration Output: {{ register_output.stdout }}"
+          - "Attachment Output: {{ attach_output.stdout }}"
+      when: register_output.stdout or attach_output.stdout
+
+  vars:
+    redhat_username: nehaklk #"{{ lookup('env', 'REDHAT_USERNAME') }}"
+    redhat_password: XXXXXXXXXX #"{{ lookup('env', 'REDHAT_PASSWORD') }}"
+
