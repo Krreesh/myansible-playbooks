@@ -1,0 +1,28 @@
+---
+- name: check last reboot uptime
+  hosts: all
+  tasks:
+    - name: check uptime
+      shell: uptime -p
+      register: uptime_result
+    - name: print uptime
+      debug:
+        msg: "{{ ansible_host }} has been up for {{ uptime_result.stdout }}"
+        #var: uptime_result.stdout
+    - name: last reboot
+      shell: who -b
+      register: reboot_date
+    - name: print last reboot
+      debug:
+        msg: "{{ ansible_hostname }} was last reboot on {{ reboot_date.stdout }}"
+
+    - name: Prepare CSV data
+      set_fact:
+        csv_line: "{{ ansible_host }},{{ ansible_hostname }},{{ uptime_result.stdout }},{{ reboot_date.stdout }}"
+    - name: Write to CSV file
+      lineinfile:
+        path: uptime_info.csv
+        line: "{{ csv_line }}"
+        create: yes
+        state: present
+      delegate_to: localhost
