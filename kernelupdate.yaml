@@ -1,0 +1,71 @@
+---
+- name: Backup, Install Kernel and Update GRUB on Amazon Linux 2
+  hosts: all
+  become: yes
+  tasks:
+    - name: Get the current date and time
+      set_fact:
+        current_datetime: "{{ ansible_date_time.iso8601 | regex_replace('[^0-9]', '') }}"
+    - name: Backup the grub.conf file
+      copy:
+        src: /boot/grub2/grub.cfg
+        dest: /boot/grub2/grub.cfg-{{ current_datetime }}.backup
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_version'] == "2"
+
+    - name: Print current kernel version
+      command: uname -r
+      register: current_kernel
+    - debug:
+        msg: "Current Kernel version: {{ current_kernel.stdout }}"
+
+    - name: Enable kernel-5.10 via amazon-linux-extras
+      command: amazon-linux-extras enable kernel-5.10
+      when: ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_version'] == "2"
+    - name: install kernel-5.10 via amazon-linux-extras
+      command: amazon-linux-extras install -y kernel-5.10
+
+    - name: Install kernel, kernel-devel, and kernel-headers
+      yum:
+        name:
+        #  - kernel
+          - kernel-devel
+          - kernel-headers
+        state: present
+
+    - name: Generate new grub configuration
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+
+    - name: Reboot the server to apply kernel changes
+      reboot:
+        reboot_timeout: 600
+        test_command: uname -r
+        pre_reboot_delay: 10
+        post_reboot_delay: 30
+
+    - name: Check the kernel version after reboot
+      command: uname -r
+      register: new_kernel_version
+    - name: print latest version of kernel
+      debug:
+        msg: "Latest Kernel version: {{ new_kernel_version }}"
+
+
+    - name: Get current hostname
+      command: hostname
+      register: hostname_result
+
+    - name: Get current kernel version
+      command: uname -r
+      register: kernel_version_result
+
+    - name: Set the output for CSV
+      set_fact:
+        csv_output: "{{ hostname_result.stdout }},{{ kernel_version_result.stdout }}"
+    - name: Save hostname and kernel version to local machine's CSV file
+      lineinfile:
+        path: kernel_versions_per_host_{{ current_datetime }}.csv
+        line: "{{ csv_output }}"
+        create: yes
+        state: present
+      delegate_to: localhost
